@@ -1,0 +1,27 @@
+{
+  "name": "iam",
+  "version": "0.0.0",
+  "description": "Simple authentication plumbing and middleware for Node/Express apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/derickbailey/iam.git"
+  },
+  "keywords": [
+    "authentication",
+    "middleware",
+    "user",
+    "login",
+    "logout",
+    "express"
+  ],
+  "author": "Derick Bailey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/derickbailey/iam/issues"
+  },
+  "homepage": "https://github.com/derickbailey/iam"
+}
