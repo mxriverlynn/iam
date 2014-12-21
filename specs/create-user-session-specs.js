@@ -51,4 +51,51 @@ describe("create user session", function(){
 
   });
 
+  describe("when creating a user session from undefined", function(){
+    var async = new AsyncSpec(this);
+
+    var httpRequest, httpResponse, session, user;
+
+    async.beforeEach(function(done){
+      var iam = new IAm();
+      session = {};
+      user = undefined;
+
+      iam.configure(function(config){
+        config.getUserToken(helpers.getUserToken);
+        config.getUserFromToken(helpers.getUserFromToken);
+      });
+
+      var request = helpers.setupRoute(iam, session, function(req, res, next){
+        iam.createUserSession(req, res, user, function(err){
+          httpRequest = req;
+          httpResponse = res;
+          res.send({});
+        });
+      });
+
+      request(function(err, res){
+        if (err) { throw err; }
+        done();
+      });
+    });
+
+    it("should not set a user token in session", function(){
+      expect(session[helpers.tokenName]).toBe(undefined);
+    });
+
+    it("should not set the user on the request", function(){
+      expect(httpRequest.user).toBe(undefined);
+    });
+
+    it("should not set the user on the response locals", function(){
+      expect(httpResponse.locals.user).toBe(undefined);
+    });
+
+    it("should indicate not logged in on response locals", function(){
+      expect(httpResponse.locals.loggedIn).toBe(false);
+    });
+
+  });
+
 });

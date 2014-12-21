@@ -10,7 +10,12 @@ var helpers = {
 
   user: user,
 
-  setupRoute: function(iam, session, handler){
+  setupRoute: function(iam, session, useMiddleware, handler){
+    if (!handler) {
+      handler = useMiddleware;
+      useMiddleware = false;
+    }
+
     var app = new express();
 
     app.use(function(req, res, next){
@@ -18,7 +23,9 @@ var helpers = {
       next();
     });
 
-    //app.use(iam.middleware());
+    if (useMiddleware) {
+      app.use(iam.middleware());
+    }
 
     var router = express.Router();
     router.get("/", handler);
@@ -34,8 +41,9 @@ var helpers = {
   },
 
   getUserToken: function(user, cb){
-    var id = user.id;
-    return cb(null, {id: user.id});
+    var id; 
+    if (user) { id = user.id; }
+    return cb(null, {id: id});
   },
 
   getUserFromToken: function(token, cb){

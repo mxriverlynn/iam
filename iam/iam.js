@@ -21,7 +21,12 @@ IAm.prototype.createUserSession = function(req, res, user, cb){
   config.getUserToken(user, function(err, token){
     if (err) { return cb(err); }
 
-    req.session._iamUserToken = token;
+    if (user) {
+      req.session._iamUserToken = token;
+    } else {
+      req.session._iamUserToken = undefined;
+    }
+    
     req.user = user;
     res.locals.user = user;
     res.locals.loggedIn = !!(user);
