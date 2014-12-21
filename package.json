@@ -2,9 +2,12 @@
   "name": "iam",
   "version": "0.0.0",
   "description": "Simple authentication plumbing and middleware for Node/Express apps",
-  "main": "index.js",
+  "directories": {
+    "lib": "iam"
+  },
+  "main": "iam/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt jasmine_node"
   },
   "repository": {
     "type": "git",
@@ -23,5 +26,15 @@
   "bugs": {
     "url": "https://github.com/derickbailey/iam/issues"
   },
-  "homepage": "https://github.com/derickbailey/iam"
+  "homepage": "https://github.com/derickbailey/iam",
+  "dependencies": {},
+  "devDependencies": {
+    "express": "^4.10.6",
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-jasmine-node": "^0.2.1",
+    "jasmine-async": "0.0.1",
+    "supertest": "^0.13.0"
+  }
 }

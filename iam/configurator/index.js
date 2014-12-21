@@ -1,7 +1,7 @@
 function Configurator(){
   this.config = {
-  }
-};
+  };
+}
 
 Configurator.prototype.getConfig = function(){
   return this.config;

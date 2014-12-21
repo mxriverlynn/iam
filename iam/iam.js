@@ -3,7 +3,7 @@ var Middleware = require("./middleware");
 
 function IAm(){
   this.configurator = new Configurator();
-};
+}
 
 IAm.prototype.configure = function(cb){
   cb(this.configurator);
@@ -24,6 +24,7 @@ IAm.prototype.createUserSession = function(req, res, user, cb){
     req.session._iamUserToken = token;
     req.user = user;
     res.locals.user = user;
+    res.locals.loggedIn = !!(user);
 
     return cb();
   });
