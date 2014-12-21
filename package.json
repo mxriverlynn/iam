@@ -1,6 +1,6 @@
 {
   "name": "iam",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Simple authentication plumbing and middleware for Node/Express apps",
   "directories": {
     "lib": "iam"
