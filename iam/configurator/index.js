@@ -7,10 +7,6 @@ Configurator.prototype.getConfig = function(){
   return this.config;
 };
 
-Configurator.prototype.login = function(fn){
-  this.config.login = fn;
-};
-
 Configurator.prototype.getUserToken = function(fn){
   this.config.getUserToken = fn;
 };

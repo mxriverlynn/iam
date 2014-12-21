@@ -2,7 +2,7 @@ var AsyncSpec = require("jasmine-async")(jasmine);
 var helpers = require("./helpers");
 var IAm = require("../iam/iam");
 
-xdescribe("create user session", function(){
+describe("create user session", function(){
 
   describe("when creating a user session from a user object", function(){
     var async = new AsyncSpec(this);
@@ -21,14 +21,14 @@ xdescribe("create user session", function(){
       var request = helpers.setupRoute(iam, session, function(req, res, next){
         httpRequest = req;
         httpResponse = res;
-        iam.createUserSession(req, res, helpers.user, function(err){
+        req.createUserSession(helpers.user, function(err){
           res.send({});
         });
       });
 
       request(function(err, res){
         if (err) { throw err; }
-        done();
+        done(err);
       });
     });
 
@@ -42,11 +42,11 @@ xdescribe("create user session", function(){
     });
 
     it("should set the user on the response locals", function(){
-      expect(httpResponse.locals.user).toBe(helpers.user);
+      expect(httpResponse.locals.iam.user).toBe(helpers.user);
     });
 
     it("should indicate logged in on response locals", function(){
-      expect(httpResponse.locals.loggedIn).toBe(true);
+      expect(httpResponse.locals.iam.loggedIn).toBe(true);
     });
 
   });
@@ -67,7 +67,7 @@ xdescribe("create user session", function(){
       });
 
       var request = helpers.setupRoute(iam, session, function(req, res, next){
-        iam.createUserSession(req, res, user, function(err){
+        req.createUserSession(user, function(err){
           httpRequest = req;
           httpResponse = res;
           res.send({});
@@ -89,13 +89,43 @@ xdescribe("create user session", function(){
     });
 
     it("should not set the user on the response locals", function(){
-      expect(httpResponse.locals.user).toBe(undefined);
+      expect(httpResponse.locals.iam.user).toBe(undefined);
     });
 
     it("should indicate not logged in on response locals", function(){
-      expect(httpResponse.locals.loggedIn).toBe(false);
+      expect(httpResponse.locals.iam.loggedIn).toBe(false);
     });
 
+  });
+
+  describe("if no request.session exists", function(){
+    var async = new AsyncSpec(this);
+
+    var response;
+
+    async.beforeEach(function(done){
+      var iam = new IAm();
+      var session = undefined;
+
+      iam.configure(function(config){
+        config.getUserToken(helpers.getUserToken);
+        config.getUserFromToken(helpers.getUserFromToken);
+      });
+
+      var request = helpers.setupRoute(iam, session, function(req, res, next){
+        res.send({});
+      });
+
+      request(function(err, res){
+        if (err) { throw err; }
+        response = res;
+        done();
+      });
+    });
+
+    it("should throw an error", function(){
+      helpers.expectResponseError(response, "No session object found. Please configure a session middlware.", "SessionNotFound");
+    });
   });
 
 });

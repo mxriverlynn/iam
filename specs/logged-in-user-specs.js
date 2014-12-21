@@ -25,7 +25,7 @@ describe("logged in user", function(){
         config.getUserFromToken(getUserFromToken);
       });
 
-      var request = helpers.setupRoute(iam, session, iam.middleware(), function(req, res, next){
+      var request = helpers.setupRoute(iam, session, function(req, res, next){
         httpRequest = req;
         httpResponse = res;
         res.send({});
@@ -46,11 +46,11 @@ describe("logged in user", function(){
     });
 
     it("should set the user on the response locals", function(){
-      expect(httpResponse.locals.user).toBe(helpers.user);
+      expect(httpResponse.locals.iam.user).toBe(helpers.user);
     });
 
     it("should indicate logged in on response locals", function(){
-      expect(httpResponse.locals.loggedIn).toBe(true);
+      expect(httpResponse.locals.iam.loggedIn).toBe(true);
     });
   });
 
@@ -72,7 +72,7 @@ describe("logged in user", function(){
         config.getUserFromToken(getUserFromToken);
       });
 
-      var request = helpers.setupRoute(iam, session, iam.middleware(), function(req, res, next){
+      var request = helpers.setupRoute(iam, session, function(req, res, next){
         httpRequest = req;
         httpResponse = res;
         res.send({});
@@ -93,11 +93,11 @@ describe("logged in user", function(){
     });
 
     it("should not set the user on the response locals", function(){
-      expect(httpResponse.locals.user).toBe(undefined);
+      expect(httpResponse.locals.iam.user).toBe(undefined);
     });
 
     it("should indicate not logged in on response locals", function(){
-      expect(httpResponse.locals.loggedIn).toBe(false);
+      expect(httpResponse.locals.iam.loggedIn).toBe(false);
     });
   });
 

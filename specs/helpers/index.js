@@ -6,17 +6,11 @@ var user = {
 };
 
 var helpers = {
-  tokenName: "_iamUserToken",
+  tokenName: "_iam-user-token",
 
   user: user,
 
-  setupRoute: function(iam, session, useMiddleware, handler){
-    var args = Array.prototype.slice.call(arguments);
-    iam = args.shift();
-    session = args.shift();
-    handler = args.pop();
-    var middleware = args;
-
+  setupRoute: function(iam, session, handler){
     var app = new express();
 
     app.use(function(req, res, next){
@@ -24,11 +18,7 @@ var helpers = {
       next();
     });
 
-    if (middleware.length > 0) {
-      middleware.forEach(function(m){
-        app.use(m);
-      });
-    }
+    app.use(iam.middleware());
 
     var router = express.Router();
     router.get("/", handler);
