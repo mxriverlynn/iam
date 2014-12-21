@@ -2,28 +2,33 @@ var AsyncSpec = require("jasmine-async")(jasmine);
 var helpers = require("./helpers");
 var IAm = require("../iam/iam");
 
-xdescribe("create user session", function(){
+describe("logged in user", function(){
 
-  describe("when creating a user session from a user object", function(){
+  describe("when a user is already logged in and hits a route", function(){
     var async = new AsyncSpec(this);
 
     var httpRequest, httpResponse, session;
+    var getUserFromToken, token;
 
     async.beforeEach(function(done){
       var iam = new IAm();
       session = {};
+      token = {id: 1};
+      session[helpers.tokenName] = token;
+      
+      getUserFromToken = jasmine
+        .createSpy("get user from token")
+        .andCallFake(helpers.getUserFromToken);
 
       iam.configure(function(config){
         config.getUserToken(helpers.getUserToken);
-        config.getUserFromToken(helpers.getUserFromToken);
+        config.getUserFromToken(getUserFromToken);
       });
 
-      var request = helpers.setupRoute(iam, session, function(req, res, next){
+      var request = helpers.setupRoute(iam, session, iam.middleware(), function(req, res, next){
         httpRequest = req;
         httpResponse = res;
-        iam.createUserSession(req, res, helpers.user, function(err){
-          res.send({});
-        });
+        res.send({});
       });
 
       request(function(err, res){
@@ -32,9 +37,8 @@ xdescribe("create user session", function(){
       });
     });
 
-    it("should set a user token in session", function(){
-      expect(session[helpers.tokenName]).not.toBe(undefined);
-      expect(session[helpers.tokenName].id).toBe(helpers.user.id);
+    it("should load user from session token", function(){
+      expect(getUserFromToken).toHaveBeenCalledWith(token, jasmine.any(Function));
     });
 
     it("should set the user on the request", function(){
@@ -48,30 +52,30 @@ xdescribe("create user session", function(){
     it("should indicate logged in on response locals", function(){
       expect(httpResponse.locals.loggedIn).toBe(true);
     });
-
   });
 
-  describe("when creating a user session from undefined", function(){
+  describe("when not user logged in, and hitting a route", function(){
     var async = new AsyncSpec(this);
 
-    var httpRequest, httpResponse, session, user;
+    var httpRequest, httpResponse, session;
+    var getUserFromToken;
 
     async.beforeEach(function(done){
       var iam = new IAm();
       session = {};
-      user = undefined;
+      
+      getUserFromToken = jasmine
+        .createSpy("get user from token");
 
       iam.configure(function(config){
         config.getUserToken(helpers.getUserToken);
-        config.getUserFromToken(helpers.getUserFromToken);
+        config.getUserFromToken(getUserFromToken);
       });
 
-      var request = helpers.setupRoute(iam, session, function(req, res, next){
-        iam.createUserSession(req, res, user, function(err){
-          httpRequest = req;
-          httpResponse = res;
-          res.send({});
-        });
+      var request = helpers.setupRoute(iam, session, iam.middleware(), function(req, res, next){
+        httpRequest = req;
+        httpResponse = res;
+        res.send({});
       });
 
       request(function(err, res){
@@ -80,8 +84,8 @@ xdescribe("create user session", function(){
       });
     });
 
-    it("should not set a user token in session", function(){
-      expect(session[helpers.tokenName]).toBe(undefined);
+    it("should not load user from session token", function(){
+      expect(getUserFromToken).not.toHaveBeenCalled();
     });
 
     it("should not set the user on the request", function(){
@@ -95,7 +99,7 @@ xdescribe("create user session", function(){
     it("should indicate not logged in on response locals", function(){
       expect(httpResponse.locals.loggedIn).toBe(false);
     });
-
   });
 
 });
+

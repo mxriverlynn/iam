@@ -11,10 +11,11 @@ var helpers = {
   user: user,
 
   setupRoute: function(iam, session, useMiddleware, handler){
-    if (!handler) {
-      handler = useMiddleware;
-      useMiddleware = false;
-    }
+    var args = Array.prototype.slice.call(arguments);
+    iam = args.shift();
+    session = args.shift();
+    handler = args.pop();
+    var middleware = args;
 
     var app = new express();
 
@@ -23,8 +24,10 @@ var helpers = {
       next();
     });
 
-    if (useMiddleware) {
-      app.use(iam.middleware());
+    if (middleware.length > 0) {
+      middleware.forEach(function(m){
+        app.use(m);
+      });
     }
 
     var router = express.Router();
@@ -47,7 +50,7 @@ var helpers = {
   },
 
   getUserFromToken: function(token, cb){
-    return cb(null, {});
+    return cb(null, helpers.user);
   },
 
   expectResponseCode: function(response, code){
