@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1 Login
+  p
+    | log in with any username and password you want. this is
+    | just a demo, so there it accepts anything you type in.
+
+  form(action="/login", method="post")
+    p
+      label Username: 
+      br
+      input(type="text", name="username")
+
+    p
+      label Password:
+      br
+      input(type="password", name="password")
+
+    p
+      input(type="submit", value="Login")

@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1 This is the homepage.
+  p 
+    - if (iam.loggedIn)
+      h3 
+        | You are logged in as 
+      h2
+        = iam.user.username
+    - else
+      h2 You are not logged in
+
+  p
+    - if (iam.loggedIn)
+      h2
+        a(href="/login/logout") Logout
+    - else
+      h2 
+        a(href="/login") Login

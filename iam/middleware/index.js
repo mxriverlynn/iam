@@ -44,17 +44,16 @@ Middleware.prototype.createUserSession = function(req, res, next, user, cb){
     return next(err);
   }
 
+  if (!user) {
+    that.destroyUserSession(req, res, next);
+    return cb();
+  }
+
   config.getUserToken(user, function(err, token){
     if (err) { return cb(err); }
 
-    if (user) {
-      req.session[TOKEN_NAME] = token;
-      that._setSessionData(req, res, user);
-    } else {
-      req.session[TOKEN_NAME] = undefined;
-      that.destroyUserSession(req, res, next);
-    }
-    
+    req.session[TOKEN_NAME] = token;
+    that._setSessionData(req, res, user);
     return cb();
   });
 };
@@ -62,15 +61,15 @@ Middleware.prototype.createUserSession = function(req, res, next, user, cb){
 Middleware.prototype.destroyUserSession = function(req, res, next){
   req.session[TOKEN_NAME] = undefined;
   req.user = undefined;
-  res.locals.iam["user"] = undefined;
-  res.locals.iam["loggedIn"] = false;
+  res.locals.iam.user = undefined;
+  res.locals.iam.loggedIn = false;
 };
 
 
 Middleware.prototype._setSessionData = function(req, res, user){
   req.user = user;
-  res.locals.iam["user"] = user;
-  res.locals.iam["loggedIn"] = !!(user);
+  res.locals.iam.user = user;
+  res.locals.iam.loggedIn = !!(user);
 };
 
 module.exports = Middleware;
