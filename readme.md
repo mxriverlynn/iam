@@ -30,15 +30,7 @@ npm start
 Then visit localhost:3000 in your browser and you can see
 a small demonstration of IAm, in action.
 
-## Getting Started
-
-IAm has one hard dependency that you must configure in your
-Express application: a session provider. I recommend
-[expressjs/session](/expressjs/session), but you can use
-any session provider as long as it provides a `req.session`
-attribute on the express request object.
-
-### Install IAm
+## Install IAm
 
 Once you have an express session provider configured, you can
 install IAm.
@@ -47,12 +39,47 @@ install IAm.
 npm install --save iam
 ```
 
-### Configure IAm
+### Configure A Session Provider
 
-IAm must be configured before it can be used. There are two
-points of configuration to add. The first is used to retrieve
-a token from the current user object. The second is used to
-turn the previously retrieved token back in to a user object.
+IAm has one dependency that you must configure in your
+Express application: a session provider. 
+
+I recommend [expressjs/session](/expressjs/session), but you can use
+any session provider as long as it provides a `req.session`
+attribute on the express request object.
+
+```
+npm install --save express-session
+```
+
+Please see the [expressjs/session](/expressjs/session)
+documentation for information on how to configure it. 
+
+## Token Based Authentication
+
+IAm uses the idea of tokens to authenticate a user. These
+tokens can be created using any value that you wish. It is common to use an ID or even an OAuth token as the 
+token for a user. The only real requirement, however, is that
+you must be able to retrieve the user in question, using the
+token that was stored for the user.
+
+**A Important Note About Tokens:** DO NOT, under any circumstances, store a password in the
+token that you create from the user object.
+
+Tokens are stored on the user's session, which is typically 
+stored as a cookie.  Even if you are using encrypted cookies, 
+you run a great risk of exposing passwords to the world if you 
+put the password on the token. Never do this. Ever. Always use 
+some other tokenized identifier from which a user can be loaded.
+
+## Configuring IAm
+
+There are two points of configuration to add, for IAm to be
+used. The first is used to retrieve a token from the current 
+user object. The second is used to turn the previously 
+retrieved token back in to a user object.
+
+### Create An iamConfig.js File
 
 Start by creating an `iamConfig.js` file in your application.
 Add the following, as an example configuration.
@@ -93,6 +120,8 @@ module.exports = function(iam){
 };
 ```
 
+### Configure And Use IAm Middleware
+
 Now, inside of your app.js file (or wherever you are
 configuring Express) you can configure IAm with this file.
 
@@ -114,17 +143,7 @@ app.use(iam.middleware());
 With IAm configured, you can use the `createUserSession` and
 `destroyUserSession` methods to login and logout.
 
-**A Important Note About Tokens**
-
-DO NOT, under any circumstances, store a password in the
-token that you create from the user object. Tokens are stored
-on the user's session, which is typically stored as a cookie.
-Even if you are using encrypted cookies, you run a great risk
-of exposing passwords to the world if you put the password on
-the token. Never do this. Ever. Always use some other tokenized
-identifier from which a user can be loaded.
-
-### Log In with createUserSession
+## Log In with createUserSession
 
 In your login route handler, you should verify your user has
 authenticated correctly and then call `req.createUserSession`
@@ -178,7 +197,7 @@ in the user's session. When subsequent requests are made to the
 application, the IAm middleware will load the token and use the
 `getUserFromToken` method to load the user again.
 
-### Logout With destroyUserSession
+## Logout With destroyUserSession
 
 Counterpoint to the `req.createUserSession` method is the
 `req.destroyUserSession` method. This method will destroy the
@@ -216,7 +235,7 @@ This method only destroys the session info that was previously
 created by IAm. You are responsible for ensuring any and all 
 other details are destroyed, as needed. 
 
-### Request and View Helpers
+## Request and View Helpers
 
 There are several helper objects and methods made available
 by the IAm middleware. You have previously seen the use of
@@ -225,7 +244,7 @@ useful during login / logout. When rendering a view, or when
 working with a user object during other portions of your 
 application, there are additional helpers avaialble.
 
-#### req.user
+### req.user
 
 A `req.user` attribute is available on the request object,
 after the `req.createUserSession` method has completed, and
@@ -245,7 +264,7 @@ router.get("/foo", function(req, res, next){
 
 ```
 
-#### user and loggedIn View Helpers
+### user and loggedIn View Helpers
 
 During view rendering, you may need access to the user object
 and may also want to know if the user is currently logged in
