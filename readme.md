@@ -14,7 +14,7 @@ forget them (log them out).
 IAm only provides authentication middleware - the code that
 verifies you are who you say you are. If you need to also
 verify that a user has permissions to do certain things,
-I recommend my [mustBe](/derickbailey/mustbe) system.
+I recommend my [mustBe](https://github.com/derickbailey/mustbe) system.
 
 ## Demo App
 
@@ -44,7 +44,7 @@ npm install --save iam
 IAm has one dependency that you must configure in your
 Express application: a session provider. 
 
-I recommend [expressjs/session](/expressjs/session), but you can use
+I recommend [expressjs/session](https://github.com/expressjs/session), but you can use
 any session provider as long as it provides a `req.session`
 attribute on the express request object.
 
@@ -52,7 +52,7 @@ attribute on the express request object.
 npm install --save express-session
 ```
 
-Please see the [expressjs/session](/expressjs/session)
+Please see the [expressjs/session](https://github.com/expressjs/session)
 documentation for information on how to configure it. 
 
 ## Token Based Authentication
@@ -134,6 +134,7 @@ var iamConfig = require("./iamConfig");
 
 var app = new express();
 
+iam.configure(iamConfig);
 // this must be done before routes are set up
 app.use(iam.middleware());
 
